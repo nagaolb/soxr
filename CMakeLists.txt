@@ -289,7 +289,7 @@ if (BUILD_EXAMPLES OR BUILD_TESTS)
   add_subdirectory (examples)
 endif ()
 
-
+target_include_directories(soxr PUBLIC ${PROJECT_SOURCE_DIR}/src)
 
 # GNU Autotools compatibility; 'make check':
 
