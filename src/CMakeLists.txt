@@ -24,40 +24,40 @@ add_definitions (${PROJECT_C_FLAGS} -DSOXR_LIB)
 
 # Libsoxr configuration:
 
-set (RDFT32 fft4g32)
+set (RDFT32 fft4g32.c)
 if (AVCODEC_FOUND)
-  set (RDFT32 avfft32)
-  set (RDFT32S avfft32s)
+  set (RDFT32 avfft32.c)
+  set (RDFT32S avfft32s.c)
 elseif (WITH_PFFFT)
-  #set (RDFT32 pffft32)
-  set (RDFT32S pffft32s)
+  #set (RDFT32 pffft32.c)
+  set (RDFT32S pffft32s.c)
 elseif (WITH_CR32S)
-  set (RDFT32S fft4g32s)
+  set (RDFT32S fft4g32s.c)
   if (NOT WITH_CR32)
-    list (APPEND RDFT32S fft4g32)
+    list (APPEND RDFT32S fft4g32.c)
   endif ()
 endif ()
 
-set (SOURCES ${PROJECT_NAME}.c data-io)
+set (SOURCES ${PROJECT_NAME}.c data-io.h data-io.c)
 
 if (WITH_CR32 OR WITH_CR32S OR WITH_CR64 OR WITH_CR64S)
-  list (APPEND SOURCES dbesi0 filter fft4g64 cr)
+  list (APPEND SOURCES dbesi0.c filter.h filter.c fft4g64.c cr.c cr.h)
 endif ()
 
 if (WITH_CR32)
-  list (APPEND SOURCES cr32 ${RDFT32})
+  list (APPEND SOURCES cr32.c ${RDFT32})
 endif ()
 
 if (WITH_CR64)
-  list (APPEND SOURCES cr64)
+  list (APPEND SOURCES cr64.c)
 endif ()
 
 if (WITH_VR32)
-  list (APPEND SOURCES vr32)
+  list (APPEND SOURCES vr32.c)
 endif ()
 
 if (WITH_CR32S)
-  foreach (source cr32s ${RDFT32S} util32s)
+  foreach (source cr32s.c ${RDFT32S} util32s.h util32s.c)
     list (APPEND SOURCES ${source})
     set_property (SOURCE ${source}
         APPEND_STRING PROPERTY COMPILE_FLAGS ${SIMD32_C_FLAGS})
@@ -65,7 +65,7 @@ if (WITH_CR32S)
 endif ()
 
 if (WITH_CR64S)
-  foreach (source cr64s pffft64s util64s)
+  foreach (source cr64s.c pffft64s.c util64s.h util64s.c)
     list (APPEND SOURCES ${source})
     set_property (SOURCE ${source}
         APPEND_STRING PROPERTY COMPILE_FLAGS ${SIMD64_C_FLAGS})
@@ -100,7 +100,7 @@ if (WITH_LSR_BINDINGS)
   set (LSR ${PROJECT_NAME}-lsr)
   set (LSR_SO_VERSION 0.1.9)
   set (LSR_SO_VERSION_MAJOR 0)
-  add_library (${LSR} ${LIB_TYPE} ${LSR})
+  add_library (${LSR} ${LIB_TYPE} ${LSR}.h ${LSR}.c)
   target_link_libraries (${LSR} ${PROJECT_NAME})
   set_target_properties (${LSR} PROPERTIES
     VERSION "${LSR_SO_VERSION}"
